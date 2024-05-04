@@ -112,7 +112,7 @@ func (a *Alpaca) ExecutePositions() {
 				TimeInForce: "day",
 			})
 		}
-		fmt.Printf("Sent market order of | %d %s %s \n", &qty, symbol, side)
+		fmt.Printf("Sent market order of | %s %s %s \n", qty.String(), symbol, side)
 		if err != nil {
 			fmt.Printf("Order for %s did not go through: %v\n", symbol, err)
 		}

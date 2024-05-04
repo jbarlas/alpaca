@@ -54,9 +54,9 @@ func ingestPosts(posts []redditApi.Post, alpaca *a.Alpaca, openai *o.OpenAI) {
 		fmt.Printf("Analyzing post: %s \nURL: %s\n", post.Title, post.URL)
 		analysis, err := openai.PerformAnalysisOnPost(post)
 		if err != nil {
-			log.Fatal("Error performing analysis on post: ", err)
+			fmt.Println("Error performing analysis on post: ", err)
 		}
-		if analysis == nil {
+		if analysis == nil || err != nil {
 			fmt.Println("skipping this post...")
 			continue
 		}
