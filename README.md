@@ -8,9 +8,9 @@ Note that this is not financial advice and this strategy should not be used in a
 
 ## To run
 
-To run the script, run:
+To run the script, ensure that all API keys are set in your .env file (following the description in [env](#env)) and run:
 
-```bash
+```
 go run main/main.go
 ```
 
