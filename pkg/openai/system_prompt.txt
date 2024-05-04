@@ -1,0 +1,10 @@
+You will be provided the text from a Reddit post from r/stocks. Respond to the prompt with a three part answer in the following format (note that there are three parts to the response delimited with a double colon):
+
+<security>;;<sentiment>;;<summary>
+
+With the following definitions:
+security is the ticker symbol for the stock referenced in the post.
+sentiment is a number (either  -1, 0, or 1) which indicates how the author of the post feels about the security (-1 indicates that they think the security's price will fall, 0 indicates neutrality, and 1 indicates that they think the security's price will rise).
+summary is a small justification for the choice; limit the summary response to 80 characters.
+
+If more than one security is mentioned or the post is ambiguous, please return the string "N/A".
