@@ -52,20 +52,14 @@ func ingestPosts(posts []redditApi.Post, alpaca *a.Alpaca, openai *o.OpenAI) {
 	for _, post := range posts {
 		fmt.Println("-------------------------------------------------")
 		fmt.Printf("Analyzing post: %s \nURL: %s\n", post.Title, post.URL)
-		prompt := o.RedditPostToOpenAIPrompt(post)
-		resp, err := openai.GetCompletion(prompt)
+		analysis, err := openai.PerformAnalysisOnPost(post)
 		if err != nil {
-			log.Fatal("Error getting completion from openai: ", err)
-		}
-		analysis, err := o.StringResponseToAnalysisResponse(resp)
-		if err != nil {
-			log.Fatal("Error converting response from openai into analysis: ", err)
+			log.Fatal("Error performing analysis on post: ", err)
 		}
 		if analysis == nil {
 			fmt.Println("skipping this post...")
 			continue
 		}
-		// now, print the analysis objects
 		fmt.Println("\nAnalysis for post:")
 		fmt.Printf("Security: %s\n", analysis.Security)
 		fmt.Printf("Sentiment: %d\n", analysis.Sentiment)

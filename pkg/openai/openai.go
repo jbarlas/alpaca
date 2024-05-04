@@ -2,7 +2,6 @@ package openai
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -33,10 +32,11 @@ func NewOpenAI() (*OpenAI, error) {
 	}, nil
 }
 
-func (o *OpenAI) GetCompletion(prompt string) (string, error) {
+func (o *OpenAI) PerformAnalysisOnPost(post reddit.Post) (*AnalysisResponse, error) {
+	userPrompt := redditPostToOpenAIPrompt(post)
 	systemPrompt, err := os.ReadFile(systemPromptPath)
 	if err != nil {
-		return "", fmt.Errorf("Error reading system prompt file: %v", err)
+		return nil, fmt.Errorf("issue reading system prompt file: %v", err)
 	}
 	response, err := o.Client.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest{
 		Model: "gpt-3.5-turbo",
@@ -47,22 +47,26 @@ func (o *OpenAI) GetCompletion(prompt string) (string, error) {
 			},
 			{
 				Role:    "user",
-				Content: prompt,
+				Content: userPrompt,
 			},
 		},
 		MaxTokens: 100,
 	})
 	if err != nil {
-		return "", errors.New("Error getting completion from OpenAI: " + err.Error())
+		return nil, fmt.Errorf("issue getting completion from OpenAI: %w", err)
 	}
-	return response.Choices[0].Message.Content, nil
+	analysis, err := stringResponseToAnalysisResponse(response.Choices[0].Message.Content)
+	if err != nil {
+		return nil, fmt.Errorf("issue converting response from OpenAI into analysis: %w", err)
+	}
+	return analysis, nil
 }
 
-func RedditPostToOpenAIPrompt(post reddit.Post) string {
+func redditPostToOpenAIPrompt(post reddit.Post) string {
 	return strings.Join([]string{post.Title, post.Body}, "\n\n")
 }
 
-func StringResponseToAnalysisResponse(response string) (*AnalysisResponse, error) {
+func stringResponseToAnalysisResponse(response string) (*AnalysisResponse, error) {
 	if response == "N/A" {
 		fmt.Println("OpenAI returned N/A")
 		return nil, nil
